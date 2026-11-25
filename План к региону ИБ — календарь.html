@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Регион ИБ · календарь на 60 дней</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens ---------- */
+:root,
+[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f5f8fc;
+    --bg-2: #eef4fb;
+    --surface: #ffffff;
+    --surface-2: #f2f6fc;
+    --surface-3: #e9f0f9;
+    --line: #dde6f1;
+    --line-soft: #e8eef7;
+    --line-strong: #c9d6e6;
+    --text: #0a1526;
+    --muted: #5b6d86;
+    --faint: #7c8ea6;
+    --accent: #16386f;
+    --accent-2: #2457a6;
+    --accent-ink: #0e2a57;
+    --accent-soft: #e6eefb;
+    --on-accent: #ffffff;
+    --nav: rgba(245, 248, 252, 0.82);
+    --blue: #4f7fd9;
+    --blue-soft: #e8f0fe;
+    --green: #2f9e7a;
+    --green-soft: #e5f7f0;
+    --purple: #7c6ce0;
+    --purple-soft: #eeeaff;
+    --red: #d95f5f;
+    --red-soft: #fdecec;
+    --slate: #7b8ea8;
+    --slate-soft: #e9eff7;
+    --shadow: 0 1px 2px rgba(12, 30, 60, .04), 0 18px 40px -32px rgba(12, 30, 60, .45);
+    --radius: 14px;
+    --font: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'Consolas', monospace;
+}
+[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #060b14;
+    --bg-2: #0a1322;
+    --surface: #0c1726;
+    --surface-2: #101e32;
+    --surface-3: #16263e;
+    --line: #1c2c46;
+    --line-soft: #16243a;
+    --line-strong: #2a3f60;
+    --text: #e9f0fa;
+    --muted: #93a6c1;
+    --faint: #6d809c;
+    --accent: #7cc4f8;
+    --accent-2: #a4d7ff;
+    --accent-ink: #bfe4ff;
+    --accent-soft: rgba(124, 196, 248, .12);
+    --on-accent: #06111f;
+    --nav: rgba(6, 11, 20, 0.82);
+    --blue: #7cc4f8;
+    --blue-soft: rgba(124, 196, 248, .13);
+    --green: #6ee7b7;
+    --green-soft: rgba(110, 231, 183, .12);
+    --purple: #c4b5fd;
+    --purple-soft: rgba(196, 181, 253, .12);
+    --red: #fca5a5;
+    --red-soft: rgba(252, 165, 165, .12);
+    --slate: #a9bcd6;
+    --slate-soft: rgba(169, 188, 214, .12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 24px 60px -36px rgba(0, 0, 0, .9);
+}
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 18.5px;
+    line-height: 1.62;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+::selection { background: var(--accent-soft); color: var(--accent-ink); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; }
+li { list-style: none; }
+svg { display: block; }
+.ic { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+.page { width: 100%; max-width: 1220px; margin: 0 auto; padding: 0 28px 120px; }
+
+/* ---------- topbar ---------- */
+.topbar {
+    position: sticky; top: 0; z-index: 50;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    background: var(--nav);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid var(--line);
+    margin: 0 -28px;
+    padding: 0 28px;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+.brand .ic { width: 23px; height: 23px; color: var(--accent); }
+.brand small { color: var(--faint); font-weight: 400; font-family: var(--mono); font-size: 12px; letter-spacing: 0; }
+.nav { display: flex; gap: 26px; font-size: 15.5px; }
+.nav a { color: var(--muted); }
+.nav a:hover { color: var(--text); text-decoration: none; }
+.top-actions { display: flex; gap: 8px; }
+.icon-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--surface);
+    display: grid; place-items: center; cursor: pointer;
+    transition: border-color .16s ease, background-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--line-strong); background: var(--surface-2); }
+.icon-btn:focus-visible, a:focus-visible, summary:focus-visible, .day:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+}
+
+/* ---------- hero ---------- */
+.hero { padding: 84px 0 58px; }
+.hero-kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--muted);
+    margin-bottom: 22px;
+}
+.hero-kicker .ic { width: 17px; height: 17px; color: var(--accent); }
+.hero h1 {
+    font-size: clamp(46px, 6.4vw, 82px);
+    line-height: .96;
+    letter-spacing: -.045em;
+    font-weight: 600;
+    max-width: 12ch;
+    text-wrap: balance;
+}
+.hero-sub {
+    margin-top: 26px;
+    font-size: 20px; line-height: 1.55;
+    color: var(--muted);
+    max-width: 58ch;
+}
+.hero-sub b { color: var(--text); font-weight: 500; }
+.hero-facts {
+    display: flex; flex-wrap: wrap; gap: 12px 28px;
+    margin-top: 30px;
+    font-size: 14px; color: var(--muted);
+}
+.hero-facts span { display: inline-flex; align-items: center; gap: 8px; }
+.hero-facts .ic { width: 17px; height: 17px; color: var(--faint); }
+.hero-facts b { font-family: var(--mono); font-weight: 500; color: var(--text); }
+.hero-note { margin-top: 14px; font-size: 13px; color: var(--muted); max-width: 60ch; line-height: 1.5; }
+
+/* ---------- section ---------- */
+.section { padding-top: 74px; scroll-margin-top: 84px; }
+.section-head {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 28px;
+    padding-top: 26px; border-top: 1px solid var(--line);
+    margin-bottom: 34px;
+}
+.section-title { display: flex; align-items: center; gap: 12px; font-size: 31px; font-weight: 600; letter-spacing: -.025em; }
+.section-title .ic { width: 25px; height: 25px; color: var(--accent); }
+.section-note { font-size: 14.5px; color: var(--muted); max-width: 44ch; line-height: 1.5; }
+
+/* ---------- calendar ---------- */
+.cal-layout { display: grid; grid-template-columns: minmax(0, 1fr) 344px; gap: 34px; align-items: start; }
+.months { display: grid; gap: 44px; min-width: 0; }
+.month-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+.month-title { font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
+.month-total { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin-bottom: 6px; }
+.weekdays span { font-family: var(--mono); font-size: 10.5px; color: var(--faint); padding-left: 4px; }
+.days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.day {
+    position: relative;
+    min-height: 108px;
+    display: flex; flex-direction: column; gap: 5px;
+    padding: 9px 10px 10px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .16s ease, transform .16s ease, background-color .16s ease;
+    overflow: hidden;
+}
+.day:hover { border-color: var(--accent); transform: translateY(-1px); }
+.day.is-empty { border-color: transparent; background: transparent; cursor: default; pointer-events: none; }
+.day-num { font-family: var(--mono); font-size: 13px; color: var(--muted); line-height: 1; }
+.day-hours { position: absolute; top: 9px; right: 10px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.day-title { font-size: 13px; line-height: 1.3; font-weight: 500; color: var(--text);
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.day-dots { margin-top: auto; display: flex; gap: 4px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+.dot.code { background: var(--blue); }
+.dot.stego, .dot.crypto { background: var(--purple); }
+.dot.forensics, .dot.nets { background: var(--green); }
+.dot.web, .dot.linux { background: var(--red); }
+.dot.theory { background: var(--slate); }
+.dot.mock { background: var(--accent); }
+.dot.reserve { background: var(--line-strong); }
+.day.is-selected { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+.day.is-exam { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.day.is-exam .day-num, .day.is-exam .day-hours { color: var(--on-accent); opacity: .72; }
+.day.is-exam .day-title { color: var(--on-accent); font-weight: 600; }
+.day.is-exam:hover { transform: translateY(-1px); }
+.day.is-start::after {
+    content: 'старт'; position: absolute; left: 10px; bottom: 9px;
+    font-family: var(--mono); font-size: 9px; letter-spacing: .02em;
+    color: var(--accent); background: var(--accent-soft);
+    padding: 1px 5px; border-radius: 4px;
+}
+.day.is-start .day-dots { display: none; }
+
+/* legend */
+.legend { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 20px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend .dot { width: 7px; height: 7px; }
+
+/* detail */
+.detail {
+    position: sticky; top: 90px;
+    border: 1px solid var(--line); border-radius: 18px;
+    background: var(--surface);
+    padding: 24px 24px 22px;
+    box-shadow: var(--shadow);
+    min-height: 360px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+}
+.detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.detail-weekday { font-size: 13px; color: var(--muted); }
+.detail-date { font-size: 30px; font-weight: 600; letter-spacing: -.03em; line-height: 1.1; margin-top: 2px; }
+.detail-hours { text-align: right; font-family: var(--mono); }
+.detail-hours b { display: block; font-size: 26px; font-weight: 500; color: var(--accent); line-height: 1.1; }
+.detail-hours span { font-size: 11px; color: var(--faint); }
+.detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; padding: 3px 9px; border-radius: 7px;
+    background: var(--surface-2); color: var(--muted); border: 1px solid var(--line-soft);
+}
+.tag .dot { width: 6px; height: 6px; }
+.detail-title { font-size: 18px; font-weight: 600; margin-top: 16px; letter-spacing: -.01em; }
+.detail-items { margin-top: 14px; display: grid; gap: 9px; }
+.detail-items li { position: relative; padding-left: 16px; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+.detail-items li::before { content: ''; position: absolute; left: 0; top: .62em; width: 7px; height: 1px; background: var(--accent); opacity: .55; }
+.detail-foot { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--line-soft); font-size: 12px; color: var(--faint); display: flex; justify-content: space-between; gap: 10px; }
+.detail-hint { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+
+/* hours */
+.hours { margin-top: 34px; display: grid; gap: 9px; max-width: 620px; }
+.hbar { display: grid; grid-template-columns: 168px 1fr 44px; gap: 14px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.hbar .track { display: block; height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.hbar .fill { display: block; height: 100%; border-radius: 99px; background: var(--blue); }
+.hbar .v { font-family: var(--mono); font-size: 12px; text-align: right; color: var(--faint); }
+.hbar.purple .fill { background: var(--purple); }
+.hbar.green .fill { background: var(--green); }
+.hbar.red .fill { background: var(--red); }
+.hbar.slate .fill { background: var(--slate); }
+.hbar.blue .fill { background: var(--blue); }
+.hbar.accent .fill { background: var(--accent); }
+.hours-note { margin-top: 13px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+
+/* weeks */
+.week { border-top: 1px solid var(--line); padding: 34px 0 8px; }
+.week:first-of-type { border-top: none; padding-top: 0; }
+.week-head { display: grid; grid-template-columns: 92px 1fr auto; gap: 18px; align-items: baseline; }
+.week-index { font-family: var(--mono); font-size: 12px; color: var(--faint); }
+.week-dates { font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
+.week-focus { font-size: 14px; color: var(--muted); margin-top: 3px; }
+.week-hours { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+.week-days { margin-top: 16px; }
+.day-row {
+    display: grid; grid-template-columns: 58px 1fr 52px; gap: 18px;
+    padding: 13px 0; border-top: 1px solid var(--line-soft);
+}
+.day-row:first-child { border-top: none; }
+.day-row-date { display: flex; flex-direction: column; gap: 1px; }
+.day-row-date b { font-family: var(--mono); font-size: 15px; font-weight: 500; }
+.day-row-date span { font-size: 11px; color: var(--faint); }
+.day-row-title { font-size: 16px; font-weight: 600; letter-spacing: -.005em; }
+.day-row-items { margin-top: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 1px 26px; }
+.day-row-items li { font-size: 14px; line-height: 1.5; color: var(--muted); position: relative; padding-left: 14px; }
+.day-row-items li::before { content: '—'; position: absolute; left: 0; color: var(--faint); }
+.day-row-hours { font-family: var(--mono); font-size: 13px; color: var(--muted); text-align: right; }
+
+/* tours */
+.tours { border-top: 1px solid var(--line); }
+.tour {
+    display: grid; grid-template-columns: 88px 1fr 150px 84px; gap: 20px;
+    padding: 17px 0; border-bottom: 1px solid var(--line-soft); align-items: baseline;
+}
+.tour-date { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+.tour-name { font-size: 16px; font-weight: 500; }
+.tour-name small { display: block; font-size: 13px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.tour-target { font-size: 13.5px; color: var(--muted); }
+.tour-hours { font-family: var(--mono); font-size: 12.5px; color: var(--faint); text-align: right; }
+
+/* project */
+.project-kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+.project-kicker .ic { width: 17px; height: 17px; color: var(--accent); }
+.project-head { max-width: 780px; }
+.project-head h2 { font-size: clamp(30px, 3.6vw, 44px); letter-spacing: -.03em; line-height: 1.1; font-weight: 600; }
+.project-lead { margin-top: 18px; font-size: 19px; line-height: 1.6; color: var(--muted); max-width: 62ch; }
+.project-lead b { color: var(--text); font-weight: 500; }
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-top: 30px; background: var(--surface); }
+.fact { padding: 16px 18px; border-left: 1px solid var(--line); }
+.fact:first-child { border-left: none; }
+.fact b { display: block; font-family: var(--mono); font-size: 21px; font-weight: 500; letter-spacing: -.02em; }
+.fact span { font-size: 12.5px; color: var(--muted); }
+.project h3 { font-size: 21px; font-weight: 600; letter-spacing: -.015em; margin: 46px 0 12px; display: flex; align-items: center; gap: 10px; }
+.project h3 .ic { width: 20px; height: 20px; color: var(--accent); }
+.project p { max-width: 72ch; color: var(--muted); font-size: 16.5px; line-height: 1.65; }
+.project p + p { margin-top: 10px; }
+.project p b { color: var(--text); font-weight: 500; }
+
+.steps { margin-top: 18px; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.step { display: grid; grid-template-columns: 42px 1fr; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--line-soft); }
+.step-n { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 3px; }
+.step-b h4 { font-size: 16px; font-weight: 600; }
+.step-b p { margin-top: 3px; font-size: 14.5px; color: var(--muted); max-width: 70ch; }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); margin-top: 16px; }
+table { width: 100%; border-collapse: collapse; min-width: 520px; }
+th { text-align: left; font-size: 12.5px; font-weight: 500; color: var(--faint); padding: 11px 16px; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+td { padding: 11px 16px; border-bottom: 1px solid var(--line-soft); font-size: 14.5px; vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+td b { font-weight: 500; }
+td.n { font-family: var(--mono); font-size: 13px; text-align: right; white-space: nowrap; color: var(--text); }
+
+.code { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2); overflow: hidden; }
+.code-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--muted); }
+.code-head span { display: inline-flex; align-items: center; gap: 7px; }
+.code pre { margin: 0; padding: 18px 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 12.8px; line-height: 1.65; color: var(--text); tab-size: 4; }
+.code code { font-family: inherit; }
+.c-k { color: var(--purple); }
+.c-s { color: var(--green); }
+.c-c { color: var(--faint); font-style: italic; }
+
+details.fold { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); margin-top: 16px; }
+details.fold summary { cursor: pointer; padding: 14px 18px; display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 500; list-style: none; }
+details.fold summary::-webkit-details-marker { display: none; }
+details.fold summary::after { content: "+"; margin-left: auto; font-family: var(--mono); color: var(--faint); }
+details.fold[open] summary::after { content: "−"; }
+details.fold[open] summary { border-bottom: 1px solid var(--line); }
+details.fold .code { margin: 0; border: 0; border-radius: 0; }
+.tag.code { background: var(--blue-soft); border-color: transparent; }
+.tag.stego, .tag.crypto { background: var(--purple-soft); border-color: transparent; }
+.tag.forensics, .tag.nets { background: var(--green-soft); border-color: transparent; }
+.tag.web, .tag.linux { background: var(--red-soft); border-color: transparent; }
+.tag.theory { background: var(--slate-soft); border-color: transparent; }
+.tag.mock { background: var(--accent-soft); border-color: transparent; }
+details.qa { border-top: 1px solid var(--line); }
+details.qa:last-of-type { border-bottom: 1px solid var(--line); }
+details.qa summary {
+    list-style: none; cursor: pointer; padding: 16px 0;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 20px;
+    font-size: 16.5px; font-weight: 500;
+}
+details.qa summary::-webkit-details-marker { display: none; }
+details.qa summary::after { content: '+'; font-family: var(--mono); font-size: 18px; color: var(--faint); line-height: 1; }
+details.qa[open] summary::after { content: '−'; }
+details.qa[open] summary { color: var(--accent); }
+.qa-body { padding: 0 40px 20px 0; font-size: 15px; line-height: 1.65; color: var(--muted); max-width: 74ch; }
+.qa-body p + p { margin-top: 8px; }
+.qa-tools { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.ghost-btn { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 9px; padding: 7px 12px; font-size: 13px; cursor: pointer; transition: border-color .16s ease, color .16s ease; }
+.ghost-btn:hover { border-color: var(--line-strong); color: var(--text); }
+.ghost-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* regime */
+.regime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.rule-list { display: grid; gap: 12px; }
+.rule-list li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 15px; color: var(--muted); }
+.rule-list .ic { width: 18px; height: 18px; color: var(--accent); margin-top: 3px; }
+.rule-list b { color: var(--text); font-weight: 500; }
+.prompt-box { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 18px 20px; }
+.prompt-box h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.prompt-box p { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.prompt-box code { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+
+.footer { margin-top: 96px; border-top: 1px solid var(--line); padding-top: 26px; display: flex; justify-content: space-between; gap: 20px; font-size: 12.5px; color: var(--faint); }
+.footer .mono { font-size: 12px; }
+
+/* motion */
+@media (prefers-reduced-motion: no-preference) {
+    .hero > * { animation: rise .55s cubic-bezier(.2,.7,.2,1) both; }
+    .hero > *:nth-child(2) { animation-delay: .05s; }
+    .hero > *:nth-child(3) { animation-delay: .1s; }
+    .hero > *:nth-child(4) { animation-delay: .15s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; animation: none !important; }
+}
+
+/* responsive */
+@media (max-width: 1080px) {
+    .cal-layout { grid-template-columns: 1fr; }
+    .detail { position: static; min-height: 0; max-height: none; }
+    .nav { gap: 18px; }
+}
+@media (max-width: 820px) {
+    .page { padding: 0 18px 80px; }
+    .topbar { margin: 0; padding: 0; height: 60px; }
+    .nav { display: none; }
+    .hero { padding: 62px 0 40px; }
+    .hero h1 { max-width: none; }
+    .hero-sub { font-size: 18px; }
+    .section { padding-top: 62px; }
+    .section-head { align-items: flex-start; flex-direction: column; gap: 10px; }
+    .section-title { font-size: 25px; }
+    .day { min-height: 84px; padding: 8px; }
+    .day-title { font-size: 11.5px; -webkit-line-clamp: 2; }
+    .day-hours { font-size: 9.5px; top: 8px; right: 8px; }
+    .week-head { grid-template-columns: 64px 1fr; }
+    .week-hours { grid-column: 2; }
+    .day-row-items { grid-template-columns: 1fr; }
+    .facts { grid-template-columns: 1fr 1fr; }
+    .fact:nth-child(3) { border-left: none; }
+    .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
+    .tour { grid-template-columns: 70px 1fr 74px; }
+    .tour-target { display: none; }
+    .regime-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+    .days, .weekdays { gap: 4px; }
+    .day { min-height: 60px; border-radius: 9px; padding: 6px 5px; }
+    .day-num { font-size: 12px; }
+    .day-hours { font-size: 9px; top: 6px; right: 6px; }
+    .day-title { display: none; }
+    .day.is-exam .day-title { display: block; font-size: 10px; }
+    .day.is-start::after { display: none; }
+    .detail { padding: 18px; }
+    .detail-date { font-size: 25px; }
+    .day-row { grid-template-columns: 48px 1fr; }
+    .day-row-hours { grid-column: 2; text-align: left; }
+    .hero-facts { gap: 8px 18px; }
+    .hbar { grid-template-columns: 112px 1fr 34px; gap: 8px; font-size: 12px; }
+}
+
+/* print */
+@media print {
+    :root { --bg: #fff; --surface: #fff; --surface-2: #fff; --line: #ccc; --line-soft: #ddd; --text: #111; --muted: #333; --faint: #555; }
+    body { font-size: 11pt; }
+    .topbar, .icon-btn, .detail, .legend, .hours, .hero-facts, .prompt-box, .qa-tools { display: none !important; }
+    .page { max-width: none; padding: 0; }
+    .cal-layout { display: block; }
+    .section { padding-top: 24px; break-inside: auto; }
+    .week, .tour, .step, .facts, .table-wrap, .code { break-inside: avoid; }
+    details.qa { break-inside: avoid; }
+    details.qa[open] .qa-body { display: block; }
+    .month { break-inside: avoid; }
+    .day { min-height: 0; border: 1px solid #ccc; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-2.9 7.4-7 9.5-4.1-2.1-7-5.1-7-9.5V6l7-3z"/><path d="M9.2 12.1l1.9 1.9 3.7-3.8"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M8 14h2M14 14h2M8 17.4h2M14 17.4h2"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.6"/><circle cx="12" cy="12" r="1"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.2 8.2 0 0 1 9.8 4 8.5 8.5 0 1 0 20 14.2z"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5"/><rect x="4" y="9" width="16" height="7.5" rx="2"/><path d="M7 16.5h10V21H7z"/><path d="M17 12h.01"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l8.5 4.6L12 12.2 3.5 7.6 12 3z"/><path d="M3.5 12.2L12 16.8l8.5-4.6M3.5 16.6L12 21.2l8.5-4.6"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 8.5L5 12l3.5 3.5M15.5 8.5L19 12l-3.5 3.5M13.2 5l-2.4 14"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8.5-8.5M16.5 6.5L19 9M14 9l2 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4L21 21"/></symbol>
+    <symbol id="i-net" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="18" r="2.2"/><path d="M10.4 6.8L6.4 16M13.6 6.8L17.6 16M7.2 18h9.6"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4M6 5h11l-2.2 4L17 13H6"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5L21 20H3l9-16.5z"/><path d="M12 9.5v4.5M12 17h.01"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="15" rx="3"/><path d="M7 9l3 3-3 3M13 15h4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l4.5 4.5L19.5 6.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10M12 14v2.5"/></symbol>
+</svg>
+
+<div class="page">
+<header class="topbar">
+    <div class="brand">
+        <svg class="ic"><use href="#i-shield"/></svg>
+        <span>Регион ИБ</span>
+        <small>2027</small>
+    </div>
+    <nav class="nav" aria-label="Разделы">
+        <a href="#calendar">Календарь</a>
+        <a href="#weeks">Расписание</a>
+        <a href="#tours">Туры</a>
+        <a href="#project">Проект</a>
+        <a href="#qa">Вопросы</a>
+    </nav>
+    <div class="top-actions">
+        <button class="icon-btn" id="printBtn" type="button" aria-label="Печать плана" title="Печать">
+            <svg class="ic"><use href="#i-print"/></svg>
+        </button>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Сменить тему" title="Светлая / тёмная тема">
+            <svg class="ic" id="themeIcon"><use href="#i-moon"/></svg>
+        </button>
+    </div>
+</header>
+
+<main>
+<section class="hero">
+    <div class="hero-kicker"><svg class="ic"><use href="#i-cal"/></svg> 26 ноября 2026 — 24 января 2027</div>
+    <h1>60 дней<br>до региона</h1>
+    <p class="hero-sub">План на <b>195 часов</b>: темы по дням, пять пробных туров и проект <b>PhishGuard</b>. Без выходных — как просил: 2–3 часа в будни, 5 часов в субботу и воскресенье.</p>
+    <div class="hero-facts">
+        <span><svg class="ic"><use href="#i-cal"/></svg><b>59</b> учебных дней</span>
+        <span><svg class="ic"><use href="#i-clock"/></svg><b>195</b> часов</span>
+        <span><svg class="ic"><use href="#i-target"/></svg><b>5</b> туров</span>
+        <span><svg class="ic"><use href="#i-code"/></svg><b>12</b> шаблонов Python</span>
+    </div>
+    <p class="hero-note">Дата региона — ориентир 24 января. Если в положении она другая, сдвинь последнюю неделю, сохранив порядок дней и часы.</p>
+</section>
+
+<section class="section" id="calendar">
+    <div class="section-head">
+        <h2 class="section-title"><svg class="ic"><use href="#i-cal"/></svg> Календарь</h2>
+        <p class="section-note">Нажми на день — покажу темы. Работают стрелки и клавиши Home / End.</p>
+    </div>
+    <div class="cal-layout">
+        <div>
+            <div class="months" id="months"></div>
+            <div class="legend" aria-label="Категории">
+                <span><i class="dot code"></i>Python и код</span>
+                <span><i class="dot crypto"></i>Крипто и стега</span>
+                <span><i class="dot forensics"></i>Форензика и сети</span>
+                <span><i class="dot web"></i>Веб и Linux</span>
+                <span><i class="dot theory"></i>Теория</span>
+                <span><i class="dot mock"></i>Туры и контрольные</span>
+            </div>
+            <div class="hours" id="hours"></div>
+            <p class="hours-note">16 дней по 2 ч + 26 по 3 ч + 17 по 5 ч = 195 часов</p>
+        </div>
+        <aside class="detail" id="detail" aria-live="polite"></aside>
+    </div>
+</section>
+
+<section class="section" id="weeks">
+    <div class="section-head">
+        <h2 class="section-title"><svg class="ic"><use href="#i-layers"/></svg> Расписание по неделям</h2>
+        <p class="section-note">Дословный список тем: что читать, что писать, какую задачу решать. Часы — чистые.</p>
+    </div>
+    <div id="weeksList"></div>
+</section>
+
+<section class="section" id="tours">
+    <div class="section-head">
+        <h2 class="section-title"><svg class="ic"><use href="#i-target"/></svg> Туры и контрольные</h2>
+        <p class="section-note">Восемь проверок: три контрольные и пять туров. После каждой — разбор и запись в журнал ошибок.</p>
+    </div>
+    <div class="tours">
+        <div class="tour"><span class="tour-date">06.12</span><span class="tour-name">Контрольная №1 <small>Python, кодировки, LSB, docx, звук</small></span><span class="tour-target">Цель: 5 из 6</span><span class="tour-hours">2 ч</span></div>
+        <div class="tour"><span class="tour-date">13.12</span><span class="tour-name">Крипто-чек <small>Цепочки, XOR, RSA на малых числах</small></span><span class="tour-target">Цель: 4 из 5</span><span class="tour-hours">1 ч</span></div>
+        <div class="tour"><span class="tour-date">20.12</span><span class="tour-name">Форензика-чек <small>Образ, pcap, лог, память</small></span><span class="tour-target">Цель: 3 из 4</span><span class="tour-hours">2 ч</span></div>
+        <div class="tour"><span class="tour-date">27.12</span><span class="tour-name">Мини-тур <small>5 задач: веб, стега, крипто</small></span><span class="tour-target">Цель: 2 из 5</span><span class="tour-hours">1,5 ч</span></div>
+        <div class="tour"><span class="tour-date">03.01</span><span class="tour-name">Мини-тур <small>5 задач: Linux, сети, форензика</small></span><span class="tour-target">Цель: 3 из 5</span><span class="tour-hours">2 ч</span></div>
+        <div class="tour"><span class="tour-date">10.01</span><span class="tour-name">Полный тур №1 <small>10 задач, 180 минут, без интернета</small></span><span class="tour-target">Цель: 4 из 10</span><span class="tour-hours">3 ч</span></div>
+        <div class="tour"><span class="tour-date">16.01</span><span class="tour-name">Полный тур №2 <small>10 задач, другая сборка</small></span><span class="tour-target">Цель: 5 из 10</span><span class="tour-hours">3 ч</span></div>
+        <div class="tour"><span class="tour-date">21.01</span><span class="tour-name">Полный тур №3 <small>Максимально похож на регион</small></span><span class="tour-target">Цель: 6 из 10</span><span class="tour-hours">3 ч</span></div>
+    </div>
+</section>
+
+<section class="section" id="project">
+    <div class="project">
+        <div class="project-head">
+            <div class="project-kicker"><svg class="ic"><use href="#i-mail"/></svg> Проект · MVP за 12 часов</div>
+            <h2>PhishGuard — пассивный анализ фишинговых писем</h2>
+            <p class="project-lead">Веб-приложение: загружаешь письмо <b>.eml</b> — получаешь оценку риска от 0 до 100, список сработавших признаков и таблицу IOC. Вложения не открываются, по ссылкам не переходим, вердикт объясним. <b>MVP собирается за 12 часов и работает без API-ключей.</b></p>
+        </div>
+
+        <div class="facts">
+            <div class="fact"><b>5</b><span>модулей</span></div>
+            <div class="fact"><b>3</b><span>внешние проверки</span></div>
+            <div class="fact"><b>0</b><span>ключей для MVP</span></div>
+            <div class="fact"><b>12 ч</b><span>сборка по вечерам</span></div>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-file"/></svg> Паспорт проекта</h3>
+        <div class="table-wrap">
+            <table>
+                <tbody>
+                    <tr><td><b>Тема</b></td><td>Разработка веб-приложения для пассивного анализа признаков фишинга в электронных письмах.</td></tr>
+                    <tr><td><b>Цель</b></td><td>Дать сотруднику объяснимый вердикт по письму <b>.eml</b> без открытия вложений и переходов по ссылкам.</td></tr>
+                    <tr><td><b>Задачи</b></td><td>Разобрать MIME и тело письма; извлечь IOC; проверить признаки; посчитать риск; собрать интерфейс и отчёт.</td></tr>
+                    <tr><td><b>Объект</b></td><td>Электронные письма. <b>Предмет</b> — признаки фишинга в заголовках, ссылках и тексте.</td></tr>
+                    <tr><td><b>Методы</b></td><td>Анализ источников, эксперимент на 20 письмах, precision/recall, сравнение с ручной проверкой.</td></tr>
+                    <tr><td><b>Новизна</b></td><td>Локальная обработка, объяснимость каждого балла и офлайн-режим — вместе, а не по отдельности.</td></tr>
+                    <tr><td><b>Значимость</b></td><td>Быстрый триаж писем для службы поддержки; готовый JSON-отчёт для тикета.</td></tr>
+                    <tr><td><b>Продукт</b></td><td>MVP на Python и Streamlit, 20 тестовых писем, README и семиминутное демо.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-mail"/></svg> Что делает система</h3>
+        <div class="steps">
+            <div class="step"><span class="step-n">01</span><div class="step-b"><h4>Разбирает письмо</h4><p>Заголовки From, Reply-To, Return-Path, Subject, Authentication-Results; текстовое или HTML-тело; вложения — только имя, размер и SHA-256. Ничего не исполняется.</p></div></div>
+            <div class="step"><span class="step-n">02</span><div class="step-b"><h4>Достаёт IOC</h4><p>URL из текста и HTML, домены, e-mail, IP. Нормализует регистр, punycode и обрезает tracking-параметры, чтобы один адрес не считался дважды.</p></div></div>
+            <div class="step"><span class="step-n">03</span><div class="step-b"><h4>Проверяет признаки</h4><p>Возраст домена через RDAP, репутация URL в URLhaus, результат SPF/DKIM/DMARC из заголовков, похожесть домена на популярный, punycode, ссылка на IP, слова срочности.</p></div></div>
+            <div class="step"><span class="step-n">04</span><div class="step-b"><h4>Считает риск</h4><p>Каждый признак даёт баллы, сумма ограничена 100. Порог: 60+ — красный, 30–59 — жёлтый, меньше 30 — зелёный. Это риск-балл, а не «вероятность».</p></div></div>
+            <div class="step"><span class="step-n">05</span><div class="step-b"><h4>Объясняет</h4><p>Таблица «признак — баллы — что нашли», рекомендации и JSON-отчёт. Человек видит, почему вердикт такой, и может проверить каждый пункт руками.</p></div></div>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-layers"/></svg> Архитектура</h3>
+        <p>Пять модулей, один поток данных. Внешние запросы — только на шаге проверок и только по домену или URL; тело письма и вложения наружу не уходят.</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Модуль</th><th>Ответственность</th><th>Выход</th></tr></thead>
+                <tbody>
+                    <tr><td><b>eml.py</b></td><td>MIME, кодировки, HTML/текст, вложения и хеши</td><td>dict с полями письма</td></tr>
+                    <tr><td><b>ioc.py</b></td><td>URL, домены, e-mail, IP; нормализация и дедупликация</td><td>список индикаторов</td></tr>
+                    <tr><td><b>checks.py</b></td><td>RDAP, URLhaus, Authentication-Results, похожесть домена</td><td>список фактов</td></tr>
+                    <tr><td><b>score.py</b></td><td>Веса, порог, объяснение по каждому баллу</td><td>score 0–100, verdict</td></tr>
+                    <tr><td><b>app.py</b></td><td>Streamlit: загрузка, карточка вердикта, таблицы, отчёт</td><td>UI + JSON</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-alert"/></svg> Признаки и веса</h3>
+        <p>Веса — стартовая гипотеза, а не истина. После 20 тестовых писем порог и веса калибруются; в отчёте это написано честно.</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Признак</th><th class="n">Баллы</th><th>Почему</th></tr></thead>
+                <tbody>
+                    <tr><td>URL есть в URLhaus</td><td class="n">+30</td><td>Подтверждённая вредоносная ссылка</td></tr>
+                    <tr><td>Домен моложе 30 дней</td><td class="n">+25</td><td>Фишинговые домены живут недолго</td></tr>
+                    <tr><td>Reply-To не совпадает с From</td><td class="n">+20</td><td>Классическая подмена обратного адреса</td></tr>
+                    <tr><td>SPF/DKIM/DMARC = fail</td><td class="n">+15</td><td>Письмо не подтвердило домен отправителя</td></tr>
+                    <tr><td>Return-Path на другом домене</td><td class="n">+10</td><td>Отправка через чужой SMTP</td></tr>
+                    <tr><td>Похожий домен (Левенштейн ≤ 2)</td><td class="n">+10</td><td>Тайпсквоттинг вокруг популярного бренда</td></tr>
+                    <tr><td>Punycode или ссылка на IP</td><td class="n">+10</td><td>Скрытый настоящий адрес</td></tr>
+                    <tr><td>Два и более слова срочности</td><td class="n">+5</td><td>Давление на эмоции</td></tr>
+                    <tr><td>SPF, DKIM и DMARC = pass</td><td class="n">−20</td><td>Снижает риск, но не отменяет его</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-terminal"/></svg> Сборка за шесть вечеров</h3>
+        <div class="steps">
+            <div class="step"><span class="step-n">01</span><div class="step-b"><h4>Парсер · 2 ч</h4><p>Читает .eml, печатает From / Reply-To / Return-Path / Subject / Authentication-Results, декодирует заголовки, достаёт тело и вложения. Готово, если три разных письма разбираются без ошибок.</p></div></div>
+            <div class="step"><span class="step-n">02</span><div class="step-b"><h4>IOC · 2 ч</h4><p>URL из текста и HTML, домены, дедупликация, нормализация. Готово, если на письме с 10 ссылками нет дублей и мусора в конце адреса.</p></div></div>
+            <div class="step"><span class="step-n">03</span><div class="step-b"><h4>Проверки · 2 ч</h4><p>RDAP с таймаутом и кэшем, URLhaus, разбор Authentication-Results, Левенштейн. Готово, если каждая проверка возвращает значение или «неизвестно», а не падает.</p></div></div>
+            <div class="step"><span class="step-n">04</span><div class="step-b"><h4>Скоринг · 2 ч</h4><p>Таблица весов, сумма, порог, объяснение. Готово, если один и тот же файл даёт один и тот же результат при включённой и выключенной сети (кроме сетевых признаков).</p></div></div>
+            <div class="step"><span class="step-n">05</span><div class="step-b"><h4>Интерфейс · 2 ч</h4><p>Streamlit: загрузка, светофор, таблица признаков, ссылки, вложения, кнопка JSON. Готово, если демо проходит за две минуты без консоли.</p></div></div>
+            <div class="step"><span class="step-n">06</span><div class="step-b"><h4>Тесты · 2 ч</h4><p>20 писем (10 фишинг / 10 легитимных), precision/recall, README, скриншоты. Готово, если цифры посчитаны и ограничения описаны.</p></div></div>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-code"/></svg> Минимальный код</h3>
+        <p>Один файл <b>app.py</b>, который уже работает. Дальше его можно разложить на модули из таблицы выше — но для защиты хватит и этого.</p>
+        <details class="fold">
+            <summary><svg class="ic"><use href="#i-code"/></svg> Код MVP — один файл</summary>
+            <div class="code">
+                <div class="code-head"><span><svg class="ic" style="width:15px;height:15px"><use href="#i-terminal"/></svg> app.py</span><span>Python 3.10+ · streamlit · requests</span></div>
+<pre><code><span class="c-c"># pip install streamlit requests</span>
+<span class="c-c"># streamlit run app.py</span>
+<span class="c-k">import</span> hashlib, html, json, re
+<span class="c-k">from</span> datetime <span class="c-k">import</span> datetime, timezone
+<span class="c-k">from</span> email <span class="c-k">import</span> policy
+<span class="c-k">from</span> email.parser <span class="c-k">import</span> BytesParser
+<span class="c-k">from</span> urllib.parse <span class="c-k">import</span> urlparse
+<span class="c-k">import</span> requests
+<span class="c-k">import</span> streamlit <span class="c-k">as</span> st
+
+POPULAR = {<span class="c-s">"google.com"</span>, <span class="c-s">"yandex.ru"</span>, <span class="c-s">"sberbank.ru"</span>, <span class="c-s">"vtb.ru"</span>,
+           <span class="c-s">"mail.ru"</span>, <span class="c-s">"gosuslugi.ru"</span>, <span class="c-s">"github.com"</span>, <span class="c-s">"microsoft.com"</span>}
+URGENCY = (<span class="c-s">"срочно"</span>, <span class="c-s">"немедленно"</span>, <span class="c-s">"заблокирован"</span>, <span class="c-s">"подтвердите"</span>,
+           <span class="c-s">"оплатите"</span>, <span class="c-s">"аккаунт"</span>, <span class="c-s">"пароль"</span>, <span class="c-s">"в течение 24"</span>)
+URL_RE = re.compile(<span class="c-s">r"https?://[^\s&lt;&gt;\"')]+"</span>, re.I)
+
+<span class="c-k">def</span> parse_eml(data):
+    msg = BytesParser(policy=policy.default).parsebytes(data)
+    body = <span class="c-s">""</span>
+    part = msg.get_body(preferencelist=(<span class="c-s">"plain"</span>, <span class="c-s">"html"</span>))
+    <span class="c-k">if</span> part <span class="c-k">is not</span> None:
+        body = part.get_content()
+        <span class="c-k">if</span> part.get_content_type() == <span class="c-s">"text/html"</span>:
+            body = html.unescape(re.sub(<span class="c-s">r"&lt;[^&gt;]+&gt;"</span>, <span class="c-s">" "</span>, body))
+    atts = []
+    <span class="c-k">for</span> a <span class="c-k">in</span> msg.iter_attachments():
+        <span class="c-k">try</span>:
+            payload = a.get_content()
+            <span class="c-k">if</span> isinstance(payload, str):
+                payload = payload.encode(<span class="c-s">"utf-8"</span>, <span class="c-s">"ignore"</span>)
+            atts.append({<span class="c-s">"name"</span>: a.get_filename() <span class="c-k">or</span> <span class="c-s">"noname"</span>,
+                         <span class="c-s">"size"</span>: len(payload),
+                         <span class="c-s">"sha256"</span>: hashlib.sha256(payload).hexdigest()})
+        <span class="c-k">except</span> Exception:
+            <span class="c-k">continue</span>
+    <span class="c-k">return</span> {<span class="c-s">"from"</span>: str(msg[<span class="c-s">"From"</span>] <span class="c-k">or</span> <span class="c-s">""</span>),
+            <span class="c-s">"reply_to"</span>: str(msg[<span class="c-s">"Reply-To"</span>] <span class="c-k">or</span> <span class="c-s">""</span>),
+            <span class="c-s">"return_path"</span>: str(msg[<span class="c-s">"Return-Path"</span>] <span class="c-k">or</span> <span class="c-s">""</span>),
+            <span class="c-s">"subject"</span>: str(msg[<span class="c-s">"Subject"</span>] <span class="c-k">or</span> <span class="c-s">""</span>),
+            <span class="c-s">"auth"</span>: str(msg[<span class="c-s">"Authentication-Results"</span>] <span class="c-k">or</span> <span class="c-s">""</span>),
+            <span class="c-s">"text"</span>: body, <span class="c-s">"attachments"</span>: atts}
+
+<span class="c-k">def</span> extract(text):
+    out, seen = [], set()
+    <span class="c-k">for</span> raw <span class="c-k">in</span> URL_RE.findall(text):
+        url = html.unescape(raw).rstrip(<span class="c-s">".,;:)"</span>)
+        <span class="c-k">if</span> url <span class="c-k">in</span> seen:
+            <span class="c-k">continue</span>
+        seen.add(url)
+        host = (urlparse(url).hostname <span class="c-k">or</span> <span class="c-s">""</span>).lower()
+        out.append({<span class="c-s">"url"</span>: url, <span class="c-s">"host"</span>: host})
+    <span class="c-k">return</span> out
+
+<span class="c-k">def</span> domain_of(header):
+    m = re.search(<span class="c-s">r"@([\w.-]+)"</span>, header <span class="c-k">or</span> <span class="c-s">""</span>)
+    <span class="c-k">return</span> m.group(<span class="c-s">1</span>).lower() <span class="c-k">if</span> m <span class="c-k">else</span> <span class="c-s">""</span>
+
+<span class="c-k">@st.cache_data</span>(ttl=<span class="c-s">86400</span>, show_spinner=<span class="c-k">False</span>)
+<span class="c-k">def</span> age_days(host):
+    <span class="c-k">try</span>:
+        r = requests.get(<span class="c-s">f"https://rdap.org/domain/{host}"</span>, timeout=<span class="c-s">5</span>)
+        events = r.json().get(<span class="c-s">"events"</span>, [])
+        reg = next((e[<span class="c-s">"eventDate"</span>] <span class="c-k">for</span> e <span class="c-k">in</span> events
+                    <span class="c-k">if</span> e.get(<span class="c-s">"eventAction"</span>) == <span class="c-s">"registration"</span>), None)
+        <span class="c-k">if not</span> reg:
+            <span class="c-k">return</span> None
+        dt = datetime.fromisoformat(reg.replace(<span class="c-s">"Z"</span>, <span class="c-s">"+00:00"</span>))
+        <span class="c-k">return</span> (datetime.now(timezone.utc) - dt).days
+    <span class="c-k">except</span> Exception:
+        <span class="c-k">return</span> None
+
+<span class="c-k">@st.cache_data</span>(ttl=<span class="c-s">3600</span>, show_spinner=<span class="c-k">False</span>)
+<span class="c-k">def</span> in_urlhaus(url):
+    <span class="c-k">try</span>:
+        r = requests.post(<span class="c-s">"https://urlhaus-api.abuse.ch/v1/url/"</span>,
+                          data={<span class="c-s">"url"</span>: url}, timeout=<span class="c-s">5</span>)
+        j = r.json()
+        <span class="c-k">return</span> j.get(<span class="c-s">"query_status"</span>) == <span class="c-s">"ok"</span> <span class="c-k">and</span> j.get(<span class="c-s">"url_status"</span>) == <span class="c-s">"online"</span>
+    <span class="c-k">except</span> Exception:
+        <span class="c-k">return</span> None
+
+<span class="c-k">def</span> levenshtein(a, b):
+    prev = list(range(len(b) + <span class="c-s">1</span>))
+    <span class="c-k">for</span> i, ca <span class="c-k">in</span> enumerate(a, <span class="c-s">1</span>):
+        cur = [i]
+        <span class="c-k">for</span> j, cb <span class="c-k">in</span> enumerate(b, <span class="c-s">1</span>):
+            cur.append(min(prev[j] + <span class="c-s">1</span>, cur[j - <span class="c-s">1</span>] + <span class="c-s">1</span>,
+                           prev[j - <span class="c-s">1</span>] + (ca != cb)))
+        prev = cur
+    <span class="c-k">return</span> prev[-<span class="c-s">1</span>]
+
+<span class="c-k">def</span> score(email, urls, online):
+    findings = []
+    <span class="c-k">def</span> add(code, label, points, evidence):
+        findings.append({<span class="c-s">"code"</span>: code, <span class="c-s">"label"</span>: label,
+                         <span class="c-s">"points"</span>: points, <span class="c-s">"evidence"</span>: evidence})
+    frm, rep = domain_of(email[<span class="c-s">"from"</span>]), domain_of(email[<span class="c-s">"reply_to"</span>])
+    <span class="c-k">if</span> rep <span class="c-k">and</span> frm <span class="c-k">and</span> rep != frm:
+        add(<span class="c-s">"reply_to"</span>, <span class="c-s">"Reply-To на другом домене"</span>, <span class="c-s">20</span>, <span class="c-s">f"{frm} → {rep}"</span>)
+    rp = domain_of(email[<span class="c-s">"return_path"</span>])
+    <span class="c-k">if</span> rp <span class="c-k">and</span> frm <span class="c-k">and</span> rp != frm:
+        add(<span class="c-s">"return_path"</span>, <span class="c-s">"Return-Path на другом домене"</span>, <span class="c-s">10</span>, <span class="c-s">f"{frm} → {rp}"</span>)
+    auth = email[<span class="c-s">"auth"</span>].lower()
+    <span class="c-k">if</span> <span class="c-s">"spf=fail"</span> <span class="c-k">in</span> auth <span class="c-k">or</span> <span class="c-s">"dkim=fail"</span> <span class="c-k">in</span> auth <span class="c-k">or</span> <span class="c-s">"dmarc=fail"</span> <span class="c-k">in</span> auth:
+        add(<span class="c-s">"auth"</span>, <span class="c-s">"SPF/DKIM/DMARC fail"</span>, <span class="c-s">15</span>, email[<span class="c-s">"auth"</span>][:<span class="c-s">140</span>])
+    <span class="c-k">if</span> all(x <span class="c-k">in</span> auth <span class="c-k">for</span> x <span class="c-k">in</span> (<span class="c-s">"spf=pass"</span>, <span class="c-s">"dkim=pass"</span>, <span class="c-s">"dmarc=pass"</span>)):
+        add(<span class="c-s">"auth_ok"</span>, <span class="c-s">"SPF/DKIM/DMARC pass"</span>, -<span class="c-s">20</span>, <span class="c-s">"все три прошли"</span>)
+    hits = [w <span class="c-k">for</span> w <span class="c-k">in</span> URGENCY <span class="c-k">if</span> w <span class="c-k">in</span> email[<span class="c-s">"text"</span>].lower()]
+    <span class="c-k">if</span> len(hits) &gt;= <span class="c-s">2</span>:
+        add(<span class="c-s">"urgency"</span>, <span class="c-s">"Давление на срочность"</span>, <span class="c-s">5</span>, <span class="c-s">", "</span>.join(hits[:<span class="c-s">4</span>]))
+    <span class="c-k">for</span> u <span class="c-k">in</span> urls[:<span class="c-s">5</span>]:
+        host = u[<span class="c-s">"host"</span>]
+        <span class="c-k">if not</span> host:
+            <span class="c-k">continue</span>
+        <span class="c-k">if</span> <span class="c-s">"xn--"</span> <span class="c-k">in</span> host:
+            add(<span class="c-s">"punycode"</span>, <span class="c-s">"Punycode-домен"</span>, <span class="c-s">10</span>, host)
+        <span class="c-k">if</span> re.fullmatch(<span class="c-s">r"\d{1,3}(\.\d{1,3}){3}"</span>, host):
+            add(<span class="c-s">"ip_link"</span>, <span class="c-s">"Ссылка на IP"</span>, <span class="c-s">10</span>, host)
+        <span class="c-k">for</span> p <span class="c-k">in</span> POPULAR:
+            <span class="c-k">if</span> host != p <span class="c-k">and</span> host.endswith(p.split(<span class="c-s">"."</span>)[-<span class="c-s">1</span>]) <span class="c-k">and</span> levenshtein(host, p) &lt;= <span class="c-s">2</span>:
+                add(<span class="c-s">"lookalike"</span>, <span class="c-s">"Похожий домен"</span>, <span class="c-s">10</span>, <span class="c-s">f"{host} ~ {p}"</span>)
+                <span class="c-k">break</span>
+        <span class="c-k">if</span> online:
+            <span class="c-k">if</span> in_urlhaus(u[<span class="c-s">"url"</span>]):
+                add(<span class="c-s">"urlhaus"</span>, <span class="c-s">"URL в URLhaus"</span>, <span class="c-s">30</span>, u[<span class="c-s">"url"</span>])
+            age = age_days(host)
+            <span class="c-k">if</span> age <span class="c-k">is not</span> None <span class="c-k">and</span> age &lt; <span class="c-s">30</span>:
+                add(<span class="c-s">"age"</span>, <span class="c-s">"Домен моложе 30 дней"</span>, <span class="c-s">25</span>, <span class="c-s">f"{host}: {age} дн."</span>)
+    total = max(<span class="c-s">0</span>, min(<span class="c-s">100</span>, sum(f[<span class="c-s">"points"</span>] <span class="c-k">for</span> f <span class="c-k">in</span> findings)))
+    <span class="c-k">return</span> total, findings
+
+st.set_page_config(page_title=<span class="c-s">"PhishGuard"</span>, page_icon=<span class="c-s">"🛡"</span>, layout=<span class="c-s">"wide"</span>)
+st.title(<span class="c-s">"PhishGuard"</span>)
+st.caption(<span class="c-s">"Пассивный анализ .eml: без открытия вложений и переходов по ссылкам"</span>)
+up = st.file_uploader(<span class="c-s">"Письмо .eml"</span>, type=[<span class="c-s">"eml"</span>])
+online = st.toggle(<span class="c-s">"Проверять репутацию в сети"</span>, value=<span class="c-k">True</span>)
+
+<span class="c-k">if</span> up:
+    email = parse_eml(up.read())
+    urls = extract(email[<span class="c-s">"text"</span>])
+    total, findings = score(email, urls, online)
+    level = <span class="c-s">"красный"</span> <span class="c-k">if</span> total &gt;= <span class="c-s">60</span> <span class="c-k">else</span> <span class="c-s">"жёлтый"</span> <span class="c-k">if</span> total &gt;= <span class="c-s">30</span> <span class="c-k">else</span> <span class="c-s">"зелёный"</span>
+    st.metric(<span class="c-s">"Риск"</span>, <span class="c-s">f"{total}/100"</span>, level)
+    st.progress(total / <span class="c-s">100</span>)
+    st.subheader(<span class="c-s">"Признаки"</span>)
+    st.dataframe(findings <span class="c-k">or</span> [{<span class="c-s">"label"</span>: <span class="c-s">"Признаков не найдено"</span>, <span class="c-s">"points"</span>: <span class="c-s">0</span>}],
+                 use_container_width=<span class="c-k">True</span>)
+    st.subheader(<span class="c-s">"Ссылки и вложения"</span>)
+    st.dataframe(urls, use_container_width=<span class="c-k">True</span>)
+    st.dataframe(email[<span class="c-s">"attachments"</span>], use_container_width=<span class="c-k">True</span>)
+    report = {<span class="c-s">"email"</span>: {k: v <span class="c-k">for</span> k, v <span class="c-k">in</span> email.items() <span class="c-k">if</span> k != <span class="c-s">"text"</span>},
+              <span class="c-s">"urls"</span>: urls, <span class="c-s">"findings"</span>: findings,
+              <span class="c-s">"score"</span>: total, <span class="c-s">"level"</span>: level}
+    st.download_button(<span class="c-s">"Скачать отчёт JSON"</span>,
+                       json.dumps(report, ensure_ascii=<span class="c-k">False</span>, indent=<span class="c-s">2</span>),
+                       <span class="c-s">"phishguard.json"</span>, <span class="c-s">"application/json"</span>)</code></pre>
+            </div>
+        </details>
+
+        <h3><svg class="ic"><use href="#i-target"/></svg> Тест и метрики</h3>
+        <p>20 писем: 10 фишинговых и 10 легитимных. Считаешь матрицу ошибок и две цифры: <b>precision</b> — доля настоящих фишингов среди тех, что система отметила красным; <b>recall</b> — доля найденных фишингов среди всех фишинговых. На маленькой выборке это ориентир, и в отчёте это надо сказать прямо.</p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Что меряем</th><th class="n">Цель</th><th>Как проверять</th></tr></thead>
+                <tbody>
+                    <tr><td>Recall</td><td class="n">≥ 0,8</td><td>Из 10 фишинговых красным или жёлтым отмечено 8+</td></tr>
+                    <tr><td>Precision</td><td class="n">≥ 0,7</td><td>Из всех «красных» не больше 30% ложных</td></tr>
+                    <tr><td>Скорость</td><td class="n">&lt; 2 с</td><td>Без сетевых проверок; с сетью — до 10 с</td></tr>
+                    <tr><td>Офлайн</td><td class="n">100%</td><td>Выключить сеть — приложение работает, сетевые признаки помечены «неизвестно»</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-flag"/></svg> Демо на 7 минут</h3>
+        <div class="steps">
+            <div class="step"><span class="step-n">01</span><div class="step-b"><h4>Проблема · 40 с</h4><p>Фишинг — самый частый вход в атаку. Сотрудник не обязан быть аналитиком, а служба поддержки не успевает разбирать каждое письмо руками.</p></div></div>
+            <div class="step"><span class="step-n">02</span><div class="step-b"><h4>Зелёное письмо · 60 с</h4><p>Загружаешь обычное письмо: домен старый, SPF/DKIM/DMARC pass, ссылок на подозрительные домены нет. Вердикт зелёный, объяснение прозрачное.</p></div></div>
+            <div class="step"><span class="step-n">03</span><div class="step-b"><h4>Красное письмо · 80 с</h4><p>«Аккаунт заблокирован», домен 2 дня, Reply-To на другом домене, URL в URLhaus. Показываешь 89/100 и таблицу: за что именно.</p></div></div>
+            <div class="step"><span class="step-n">04</span><div class="step-b"><h4>Офлайн · 50 с</h4><p>Выключаешь сеть, повторяешь анализ: вердикт сохраняется по локальным признакам, сетевые помечены «неизвестно». Это ответ на «а если интернета не будет».</p></div></div>
+            <div class="step"><span class="step-n">05</span><div class="step-b"><h4>Как устроено · 90 с</h4><p>Пять модулей, поток данных, где считается балл. Подчёркиваешь: LLM не принимает решение, вердикт детерминирован.</p></div></div>
+            <div class="step"><span class="step-n">06</span><div class="step-b"><h4>Право и ограничения · 50 с</h4><p>Вложения не открываются, по ссылкам не ходим, только публичные реестры. Честно про .msg, OCR и маленькую выборку.</p></div></div>
+            <div class="step"><span class="step-n">07</span><div class="step-b"><h4>Цифры и развитие · 60 с</h4><p>Precision/recall на 20 письмах, скорость, что дальше: шлюз, локальная модель, расширение.</p></div></div>
+        </div>
+
+        <h3><svg class="ic"><use href="#i-lock"/></svg> Ограничения и правовая рамка</h3>
+        <ul class="rule-list">
+            <li><svg class="ic"><use href="#i-check"/></svg><span><b>Пассивность.</b> Вложения не исполняются, по ссылкам браузер не переходит, письма никуда не отправляются. Анализируется уже полученный образец.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><b>Только публичные источники.</b> RDAP и URLhaus — открытые реестры; запросы идут по домену или URL, без тела письма и вложений.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><b>Данные остаются у пользователя.</b> Есть режим без сети: приложение работает локально, отчёт не уходит наружу.</span></li>
+            <li><svg class="ic"><use href="#i-alert"/></svg><span><b>Ограничения MVP.</b> Только .eml, без OCR картинок и без детонации вложений; выборка 20 писем; балл — не вероятность. URLhaus может требовать бесплатный ключ — без него признак помечается «неизвестно», а не «чисто».</span></li>
+            <li><svg class="ic"><use href="#i-book"/></svg><span><b>Формулировка для жюри.</b> «Пассивный анализ образца без взаимодействия с инфраструктурой атакующего — blue-team-подход, согласованный с NIST SP 800-61».</span></li>
+        </ul>
+    </div>
+</section>
+
+<section class="section" id="qa">
+    <div class="section-head">
+        <h2 class="section-title"><svg class="ic"><use href="#i-book"/></svg> Вопросы экзаменаторов</h2>
+        <p class="section-note">18 ответов, которые лучше выучить своими словами. Все они про то, что реально сделано, а не про «перспективы».</p>
+    </div>
+    <div class="qa-tools"><button class="ghost-btn" id="qaToggle" type="button">Раскрыть все ответы</button></div>
+    <div>
+        <details class="qa" open><summary>Почему это проект по информационной безопасности, а не по вебу?</summary><div class="qa-body"><p>Задача — обнаружить фишинг, то есть защитить пользователя. Веб здесь только способ доставки: разбираются заголовки, ссылки и признаки подделки, а результат — решение о риске. Это классический blue-team-сценарий: анализ уже полученного образца без взаимодействия с атакующим.</p></div></details>
+        <details class="qa" open><summary>В чём новизна? Таких сервисов много.</summary><div class="qa-body"><p>Новизна не в «ещё одном антивирусе», а в сочетании трёх свойств: письмо не покидает машину, вердикт объясним по каждому признаку, система работает офлайн. Большинство публичных проверок — чёрный ящик, который отправляет письмо на сторонний сервер; здесь наоборот.</p></div></details>
+        <details class="qa"><summary>Как работает система от загрузки до вердикта?</summary><div class="qa-body"><p>Пять шагов: разбор MIME → извлечение IOC → проверки (RDAP, URLhaus, Authentication-Results, похожесть домена) → сумма весов с порогом → отчёт с объяснением. Каждый шаг — отдельный модуль, поэтому его можно заменить или протестировать отдельно.</p></div></details>
+        <details class="qa"><summary>Где здесь искусственный интеллект?</summary><div class="qa-body"><p>В MVP его нет — и это осознанно. Вердикт считает детерминированный движок, поэтому результат воспроизводим. LLM можно подключить как необязательный слой, который переписывает готовое объяснение человеческим языком; решение она не принимает и вложений не видит. Если ключа или сети нет, система просто работает без этого слоя.</p></div></details>
+        <details class="qa"><summary>Почему не машинное обучение?</summary><div class="qa-body"><p>Нет размеченного датасета и нет необходимости: на 20 письмах модель переобучится и её нельзя будет объяснить. Правила дают прозрачный baseline, который можно проверить руками. ML — следующий шаг, когда появится хотя бы несколько сотен размеченных образцов и метрики станут устойчивыми.</p></div></details>
+        <details class="qa"><summary>Как вы проверяли точность?</summary><div class="qa-body"><p>Собрал 20 писем: 10 фишинговых и 10 легитимных. Считаю precision, recall и матрицу ошибок, отдельно смотрю, на каких признаках система ошибается. Цель — recall не ниже 0,8 при precision не ниже 0,7. Выборка маленькая, поэтому в отчёте это указано как ограничение, а не как гарантия.</p></div></details>
+        <details class="qa"><summary>Что будет при ложном срабатывании?</summary><div class="qa-body"><p>Человек видит каждый признак и его вклад, поэтому может проверить: действительно ли домен новый, действительно ли ссылка в URLhaus. Жёлтая зона специально сделана зоной ручной проверки. Порог и веса можно менять после калибровки, не меняя код проверок.</p></div></details>
+        <details class="qa"><summary>Чем это отличается от VirusTotal и антивируса?</summary><div class="qa-body"><p>Антивирус ищет сигнатуры файлов, VirusTotal — репутацию по базам. Мой инструмент анализирует контекст письма: несовпадение адресов, результат аутентификации домена, возраст ссылки, давление на срочность. Это дополнение к антивирусу, а не замена; при желании VT можно подключить по хешу вложения, но для MVP это не нужно.</p></div></details>
+        <details class="qa"><summary>Безопасно ли загружать письмо? Что с персональными данными?</summary><div class="qa-body"><p>Письмо обрабатывается локально, вложения не открываются и не исполняются. В сеть уходят только домен для RDAP и URL для URLhaus — без тела письма, без вложений и без адресов получателей. В офлайн-режиме не уходит ничего; отчёт можно скачать локально.</p></div></details>
+        <details class="qa"><summary>Почему Streamlit, а не нормальный фронтенд?</summary><div class="qa-body"><p>Streamlit даёт работающий интерфейс за вечер и не отвлекает от логики анализа — это правильный выбор для прототипа и демо. В продакшене интерфейс заменится на FastAPI плюс отдельный фронтенд, но ядро анализа останется тем же.</p></div></details>
+        <details class="qa"><summary>Как это масштабировать на поток писем?</summary><div class="qa-body"><p>Вынести проверки в отдельный сервис с очередью, кэшировать ответы RDAP и URLhaus, ограничить таймауты и число проверяемых ссылок на письмо. Тогда анализ одного письма — это несколько параллельных запросов, а не блокирующая операция.</p></div></details>
+        <details class="qa"><summary>Что было самым сложным?</summary><div class="qa-body"><p>Парсинг MIME: multipart, разные кодировки, письма только с HTML, вложения разных типов. Второе — нормализация URL: punycode, сущности HTML, мусор в конце адреса. Оба места закрыты тестами на реальных письмах.</p></div></details>
+        <details class="qa"><summary>Почему домен моложе 30 дней считается признаком?</summary><div class="qa-body"><p>Это эмпирическое правило: фишинговые домены часто регистрируют под кампанию и живут недолго. Но это только один признак и только баллы: старый домен не гарантирует безопасность, а новый — не гарантирует атаку. Если RDAP не ответил, ставится «неизвестно», а не «чисто».</p></div></details>
+        <details class="qa"><summary>Что если письмо на русском или с картинкой вместо текста?</summary><div class="qa-body"><p>Текст извлекается из HTML, русская лексика срочности есть в словаре. Картинки в MVP не распознаются — это ограничение, которое я озвучиваю честно; OCR и анализ изображений — следующий шаг. Для писем без текста работают заголовки и ссылки, то есть часть проверок всё равно сработает.</p></div></details>
+        <details class="qa"><summary>Как защищено само приложение?</summary><div class="qa-body"><p>Ограничение размера файла, таймауты на внешние запросы, запрет исполнения вложений, отсутствие перехода по ссылкам (значит, нет SSRF через редиректы), проверка домена перед запросом в RDAP. Отчёт не содержит тела письма — только метаданные и IOC.</p></div></details>
+        <details class="qa"><summary>Почему оценка 0–100, а не вероятность?</summary><div class="qa-body"><p>Потому что это риск-балл, а не статистическая вероятность: я не обучал модель на вероятностях и не могу честно сказать «73%». Балл показывает, сколько признаков сработало и насколько они весомы. Порог 60 — красный, 30–59 — жёлтый; это написано и в интерфейсе, и в отчёте.</p></div></details>
+        <details class="qa"><summary>Юридически это законно?</summary><div class="qa-body"><p>Да: анализируется уже полученное письмо, без взаимодействия с инфраструктурой атакующего. Используются публичные реестры, вложения не исполняются, данные не передаются третьим лицам. Это соответствует практике blue team и рекомендациям NIST SP 800-61 по обращению с инцидентами.</p></div></details>
+        <details class="qa"><summary>Что дальше?</summary><div class="qa-body"><p>Три направления: интеграция с почтовым шлюзом (анализ на лету), локальная модель на размеченных данных и OCR вложений. Браузерное расширение — отдельный проект, в MVP его нет, чтобы не размывать фокус.</p></div></details>
+    </div>
+</section>
+
+<section class="section" id="regime">
+    <div class="section-head">
+        <h2 class="section-title"><svg class="ic"><use href="#i-clock"/></svg> Режим</h2>
+        <p class="section-note">Без выходных — это 59 дней подряд. Такое выдерживает только тот, кто спит и не пытается «догнать» пропущенное двойной нагрузкой.</p>
+    </div>
+    <div class="regime-grid">
+        <ul class="rule-list">
+            <li><svg class="ic"><use href="#i-clock"/></svg><span><b>Сон 8 часов.</b> Недосып стоит дороже одного пропущенного вечера: на туре он превращает лёгкие задачи в нерешённые.</span></li>
+            <li><svg class="ic"><use href="#i-target"/></svg><span><b>25 минут сам.</b> Нет продвижения — отложи и вернись. Подсказку бери только после честной попытки, готовое решение — в последнюю очередь.</span></li>
+            <li><svg class="ic"><use href="#i-terminal"/></svg><span><b>Тренируйся без интернета.</b> На туре не будет ни поиска, ни заметок. Только <span class="mono">help()</span>, <span class="mono">dir()</span> и <span class="mono">man</span>.</span></li>
+            <li><svg class="ic"><use href="#i-check"/></svg><span><b>Пиши одну строку после задачи.</b> «Этот приём нужен для…» — иначе через неделю всё сливается в кашу.</span></li>
+            <li><svg class="ic"><use href="#i-alert"/></svg><span><b>Не удваивай.</b> Пропустил день — перенеси темы на резервные часы в субботу, а не сиди шесть часов подряд.</span></li>
+            <li><svg class="ic"><use href="#i-cal"/></svg><span><b>1 января — 3 часа теории.</b> Это самый лёгкий день в плане; остальное время отдыхай, чтобы не сорваться на второй неделе.</span></li>
+            <li><svg class="ic"><use href="#i-search"/></svg><span><b>OSINT — после региона.</b> В темах региона его нет, поэтому в 195 часов он не входит. Если захочется отдохнуть с пользой — оставь на выходной после 24 января.</span></li>
+        </ul>
+        <div>
+            <div class="prompt-box">
+                <h4>Как проходить день с другим ИИ</h4>
+                <p>Скопируй тему и пункты дня из календаря и отправь так:</p>
+                <p style="margin-top:8px"><code>Тема: &lt;дата и название&gt;. План: &lt;пункты&gt;. Объясни по порядку, потом дай 3 задачи по теме и проверь мои решения. Готовых ответов не давай, только подсказки после попытки.</code></p>
+                <p style="margin-top:8px">Так день не превращается в чтение: ты заканчиваешь его решёнными задачами, а не «вроде понял».</p>
+            </div>
+            <div class="prompt-box" style="margin-top:14px">
+                <h4>Что считать закрытым днём</h4>
+                <p>Не «прочитал», а: можешь без подсказки объяснить тему вслух, написал рабочий скрипт или решил задачу, записал одну строку вывода. Если нет — день не закрыт, даже если часы отсижены.</p>
+            </div>
+        </div>
+    </div>
+</section>
+</main>
+
+<footer class="footer">
+    <span>Регион ИБ · 26.11.2026 — 24.01.2027 · 195 часов · без выходных</span>
+    <span class="mono">v3 · 25.11.2026</span>
+</footer>
+
+<script>
+const WEEKS = [
+    { n: 1, label: "26–29 ноября", focus: "Python-ядро и файлы" },
+    { n: 2, label: "30 ноября — 6 декабря", focus: "Байты, контейнеры, звук" },
+    { n: 3, label: "7–13 декабря", focus: "Крипто: коды, XOR, RSA" },
+    { n: 4, label: "14–20 декабря", focus: "Форензика: образ, память, pcap" },
+    { n: 5, label: "21–27 декабря", focus: "Веб: доступ, SQLi, логика" },
+    { n: 6, label: "28 декабря — 3 января", focus: "Linux, сети, теория" },
+    { n: 7, label: "4–10 января", focus: "Прикладной Python и реверс" },
+    { n: 8, label: "11–17 января", focus: "Добор и два тура" },
+    { n: 9, label: "18–24 января", focus: "Финиш и регион" }
+];
+
+const DAYS = [
+    { d: "2026-11-26", h: 3, g: "code", mix: { code: 3 }, w: 1, t: "Старт и Python", items: [
+        "Проверить окружение: Python 3.11+, VS Code, WSL/Kali, binwalk, strings, nc, hashcat, Wireshark.",
+        "Пройти 6 мини-задач на время и записать пробелы.",
+        "Python: строки, срезы, in, f-строки {x:02x}.",
+        "8 упражнений на срезы."
+    ]},
+    { d: "2026-11-27", h: 3, g: "code", mix: { code: 3 }, w: 1, t: "Списки и циклы", items: [
+        "for по строке, списку и range; накопление результата.",
+        "sorted, enumerate, zip.",
+        "Мини-проект: Цезарь-брутфорс и частотный скоринг.",
+        "10 упражнений на списки."
+    ]},
+    { d: "2026-11-28", h: 5, g: "code", mix: { code: 5 }, w: 1, t: "Словари и файлы", items: [
+        "dict, get, Counter, множества; сортировка по значению.",
+        "Функции, try/except, sys.argv.",
+        "Файлы: чтение, запись, splitlines.",
+        "Скрипт stats.py: строки, слова, частоты, отчёт."
+    ]},
+    { d: "2026-11-29", h: 5, g: "stego", mix: { stego: 3, code: 2 }, w: 1, t: "Файлы и LSB", items: [
+        "§1.4–1.5: сигнатуры, file, strings, binwalk, hex.",
+        "Python: open('rb'), find, срезы.",
+        "ZIP внутри JPG: найти и распаковать.",
+        "§1.6: BMP, PNG, JPEG; палитра и RGB.",
+        "LSB-экстрактор для BMP 24-bit."
+    ]},
+    { d: "2026-11-30", h: 3, g: "code", mix: { code: 2, stego: 1 }, w: 2, t: "Байты и BMP", items: [
+        "bytes, to_bytes/from_bytes, &, >>, struct, zlib.",
+        "LSB по каналам и порядок бит.",
+        "Задача A «Во все поля».",
+        "Повторить сигнатуры по памяти."
+    ]},
+    { d: "2026-12-01", h: 2, g: "stego", mix: { stego: 1, code: 1 }, w: 2, t: "PNG и LSB", items: [
+        "PNG-чанки: IHDR, IDAT, IEND; zlib и фильтры.",
+        "LSB из PNG без Pillow.",
+        "Задача B «Коды-кодики».",
+        "Разобрать, где именно был спрятан текст."
+    ]},
+    { d: "2026-12-02", h: 2, g: "code", mix: { code: 2 }, w: 2, t: "Кодировки", items: [
+        "base64, base32, base85, hex, urlencode, rot13, QP.",
+        "Скрипт decode_chain.py с автоопределением.",
+        "12 цепочек подряд.",
+        "Записать признаки каждой кодировки."
+    ]},
+    { d: "2026-12-03", h: 3, g: "code", mix: { code: 1, stego: 2 }, w: 2, t: "Регулярки и IOC", items: [
+        "Регулярки: findall, группы, (?i), границы слов, DOTALL.",
+        "Извлечь URL, IP, e-mail и флаги из текста и HTML.",
+        "Повтор задачи B под таймер.",
+        "5 своих цепочек."
+    ]},
+    { d: "2026-12-04", h: 3, g: "stego", mix: { stego: 2, code: 1 }, w: 2, t: "Контейнеры", items: [
+        "docx и xlsx — это zip: zipfile, xml.etree.",
+        "PDF: объекты, потоки, FlateDecode.",
+        "Задача C «Скрытый текст».",
+        "Задача D «OOXML»."
+    ]},
+    { d: "2026-12-05", h: 5, g: "stego", mix: { stego: 3, code: 2 }, w: 2, t: "Звук и спектр", items: [
+        "WAV: RIFF, PCM 8/16 бит, сэмплрейт.",
+        "Audacity: Spectrogram, 4–14 кГц, текст в полосе.",
+        "Python: wave, LSB по сэмплам, Morse.",
+        "DFT-принтер спектрограммы на cmath."
+    ]},
+    { d: "2026-12-06", h: 5, g: "mock", mix: { mock: 2, crypto: 2, reserve: 1 }, w: 2, t: "Контрольная №1", items: [
+        "Контрольная 2 ч: 6 задач — Цезарь, байты, LSB, docx, WAV, кодировки.",
+        "Разбор 1 ч; переписать 2 слабых решения.",
+        "§3.2: Цезарь, ROT, атбаш, замена.",
+        "Частотный анализ и Визенер."
+    ]},
+    { d: "2026-12-07", h: 3, g: "crypto", mix: { crypto: 3 }, w: 3, t: "Кодирование §3.3", items: [
+        "§3.3: базы, uuencode, base85, punycode, счисления.",
+        "20 цепочек; модуль codec.py.",
+        "Задача B «Золотая таска»: число в байты."
+    ]},
+    { d: "2026-12-08", h: 2, g: "crypto", mix: { crypto: 2 }, w: 3, t: "XOR, 1 байт", items: [
+        "XOR: таблица истинности, A⊕B⊕B=A.",
+        "Перебор 256 байт и скоринг по частотам.",
+        "5 коротких шифротекстов."
+    ]},
+    { d: "2026-12-09", h: 2, g: "crypto", mix: { crypto: 2 }, w: 3, t: "XOR, ключ", items: [
+        "Длина ключа: индекс совпадения и Хэмминг.",
+        "Ключ по столбцам, crib-drag.",
+        "Задача D «Одна беда хорошо…»."
+    ]},
+    { d: "2026-12-10", h: 3, g: "crypto", mix: { crypto: 3 }, w: 3, t: "Хеши и hashcat", items: [
+        "hashlib, HMAC; хеш ≠ шифрование.",
+        "hashcat: -m 0, -m 1000, -m 1800.",
+        "Словарь, правила, маска.",
+        "Определить тип хеша по виду."
+    ]},
+    { d: "2026-12-11", h: 3, g: "crypto", mix: { crypto: 3 }, w: 3, t: "Математика RSA", items: [
+        "gcd, расширенный Евклид, обратный элемент.",
+        "pow(a, -1, m) и pow(m, e, n).",
+        "Диффи–Хеллман на малых числах.",
+        "p=13, q=23: посчитать n, φ, d вручную."
+    ]},
+    { d: "2026-12-12", h: 5, g: "crypto", mix: { crypto: 4, code: 1 }, w: 3, t: "RSA и факторизация", items: [
+        "RSA-код: encrypt/decrypt, to_bytes.",
+        "Факторизация: перебор, Ферма, Поллард-ро.",
+        "Задача E* «Ягнятник», 128-битный n.",
+        "Проверить d через e·d mod φ."
+    ]},
+    { d: "2026-12-13", h: 5, g: "crypto", mix: { crypto: 2, mock: 1, forensics: 2 }, w: 3, t: "Крипто-чек и ФС", items: [
+        "Крипто-чек 1 ч: цепочка, XOR, RSA.",
+        "§2.3: ФС, удаление, сигнатуры, кластеры.",
+        "PhotoRec на fs.img.",
+        "Задача A «Лучшие снимки»."
+    ]},
+    { d: "2026-12-14", h: 3, g: "forensics", mix: { forensics: 2, code: 1 }, w: 4, t: "Карвер", items: [
+        "Карвер: чтение по 8 МБ с перекрытием.",
+        "Границы JPEG, PNG, ZIP; запись файлов.",
+        "Сравнить с PhotoRec на 5 образах."
+    ]},
+    { d: "2026-12-15", h: 2, g: "forensics", mix: { forensics: 2 }, w: 4, t: "Память", items: [
+        "strings -a -n 6, fgrep -az, split.",
+        "UTF-16LE: strings -e l.",
+        "Три больших файла; найти строки-пароли."
+    ]},
+    { d: "2026-12-16", h: 2, g: "forensics", mix: { forensics: 2 }, w: 4, t: "Дампы", items: [
+        "Задача E* «Энтерпрайз I»: gz → bz2.",
+        "Потоковый поиск без read() целиком.",
+        "Найти флаг в гигабайтах."
+    ]},
+    { d: "2026-12-17", h: 3, g: "nets", mix: { nets: 2, forensics: 1 }, w: 4, t: "Сети", items: [
+        "IP, TCP/UDP, DNS, HTTP, порты.",
+        "Wireshark: фильтры, Follow, Export Objects.",
+        "Statistics → Protocol Hierarchy.",
+        "3 pcap на разбор."
+    ]},
+    { d: "2026-12-18", h: 3, g: "forensics", mix: { forensics: 2, nets: 1 }, w: 4, t: "pcap", items: [
+        "Задача C «Загрузка»: Export Objects.",
+        "HTTP-заголовки, тела, редиректы.",
+        "Найти файл и хост."
+    ]},
+    { d: "2026-12-19", h: 5, g: "forensics", mix: { forensics: 3, code: 2 }, w: 4, t: "Логи и атака", items: [
+        "Задача B «Лес густой»: zcat, grep, шум.",
+        "Задача D «Сетевая атака»: SQLi в pcap.",
+        "Парсер логов: топ IP, коды, окна."
+    ]},
+    { d: "2026-12-20", h: 5, g: "forensics", mix: { forensics: 2, mock: 2, reserve: 1 }, w: 4, t: "Форензика-чек", items: [
+        "Форензика-чек 2 ч: образ, pcap, лог, память.",
+        "Метаданные: EXIF, docx, PDF, таймстампы.",
+        "Разбор ошибок и 2 повторные задачи."
+    ]},
+    { d: "2026-12-21", h: 3, g: "web", mix: { web: 3 }, w: 5, t: "HTTP", items: [
+        "Методы, коды, заголовки, URL, urlencode.",
+        "curl -i/-v и те же запросы в requests.",
+        "20 запросов с разбором."
+    ]},
+    { d: "2026-12-22", h: 2, g: "web", mix: { web: 2 }, w: 5, t: "Куки и сессии", items: [
+        "Куки: HttpOnly, Secure, SameSite.",
+        "DevTools: Application и Network.",
+        "Подмена cookie и скрытые поля."
+    ]},
+    { d: "2026-12-23", h: 2, g: "web", mix: { web: 2 }, w: 5, t: "JWT и IDOR", items: [
+        "JWT: base64url, alg:none, слабый секрет.",
+        "IDOR: чужой id, роль, цена.",
+        "Задача D «Платные уроки»."
+    ]},
+    { d: "2026-12-24", h: 3, g: "web", mix: { web: 2, code: 1 }, w: 5, t: "Traversal", items: [
+        "Path traversal: ../, %2e%2e, обход фильтров.",
+        "Сырой HTTP через сокет и --path-as-is.",
+        "Задача B «Точечный удар»."
+    ]},
+    { d: "2026-12-25", h: 3, g: "web", mix: { web: 2, code: 1 }, w: 5, t: "SQLi", items: [
+        "SQLi: кавычка, -- , ORDER BY, UNION.",
+        "sqlite_master и information_schema.",
+        "Свой sqlite-стенд на 20 строк."
+    ]},
+    { d: "2026-12-26", h: 5, g: "web", mix: { web: 3, code: 2 }, w: 5, t: "SQLi и JS", items: [
+        "Blind-SQLi и LIMIT 0.",
+        "Задача A «Безопасный банк».",
+        "§5.4: DevTools Sources, XSS, клиентская логика.",
+        "Разбор минифицированного JS."
+    ]},
+    { d: "2026-12-27", h: 5, g: "web", mix: { web: 2, mock: 3 }, w: 5, t: "Веб-чек и мини-тур", items: [
+        "Веб-чек: 3 стенда за 2,5 ч.",
+        "Мини-тур 1,5 ч, 5 задач.",
+        "Разбор 1 ч; журнал ошибок."
+    ]},
+    { d: "2026-12-28", h: 3, g: "linux", mix: { linux: 3 }, w: 6, t: "Linux", items: [
+        "20 команд: файлы, права, поиск, архивы.",
+        "grep -r, find, xargs, tar, chmod.",
+        "ss, nc, ip a; процессы."
+    ]},
+    { d: "2026-12-29", h: 2, g: "linux", mix: { linux: 2 }, w: 6, t: "SSH", items: [
+        "SSH: ключи, config, scp, туннели.",
+        "Поиск флага: find, grep, history.",
+        "Bandit 0–10."
+    ]},
+    { d: "2026-12-30", h: 2, g: "linux", mix: { linux: 2 }, w: 6, t: "PrivEsc", items: [
+        "sudo -l, SUID, cron, PATH, capabilities.",
+        "8 приёмов GTFOBins.",
+        "Чек-лист PrivEsc на 10 минут."
+    ]},
+    { d: "2026-12-31", h: 3, g: "nets", mix: { nets: 3 }, w: 6, t: "Wireshark", items: [
+        "20 фильтров Wireshark.",
+        "Креды в FTP/HTTP, SYN-скан.",
+        "DNS-туннель и ICMP-утечка."
+    ]},
+    { d: "2027-01-01", h: 3, g: "theory", mix: { theory: 3 }, w: 6, t: "Теория ИБ", items: [
+        "CIA, AAA, риск, угроза, уязвимость.",
+        "DAC, MAC, RBAC.",
+        "Симметрика, асимметрика, хеш, подпись, PKI.",
+        "30 вопросов."
+    ]},
+    { d: "2027-01-02", h: 5, g: "theory", mix: { theory: 2, linux: 2, reserve: 1 }, w: 6, t: "Теория и Linux", items: [
+        "СЗИ: firewall, IDS/IPS, VPN, DLP, WAF, SIEM.",
+        "60 вопросов, разбор ошибок.",
+        "Linux-чек: 20 команд и PrivEsc."
+    ]},
+    { d: "2027-01-03", h: 5, g: "mock", mix: { mock: 3, code: 2 }, w: 6, t: "Мини-тур", items: [
+        "Мини-тур 2 ч, 5 задач.",
+        "Разбор 1,5 ч.",
+        "Повтор Python 1,5 ч."
+    ]},
+    { d: "2027-01-04", h: 3, g: "code", mix: { code: 2, web: 1 }, w: 7, t: "requests", items: [
+        "requests: GET/POST, заголовки, куки, Session.",
+        "Редиректы, JSON, бинарный ответ.",
+        "10 запросов."
+    ]},
+    { d: "2027-01-05", h: 2, g: "code", mix: { code: 2 }, w: 7, t: "Сокеты", items: [
+        "socket: create_connection, sendall/recv.",
+        "Чтение до разделителя.",
+        "Задача D «Netcalc»."
+    ]},
+    { d: "2027-01-06", h: 2, g: "code", mix: { code: 1, web: 1 }, w: 7, t: "Редирект и цикл", items: [
+        "allow_redirects=False, Location.",
+        "Задача B «Редирект».",
+        "2020 запросов в Session."
+    ]},
+    { d: "2027-01-07", h: 3, g: "code", mix: { code: 3 }, w: 7, t: "Маршрут I", items: [
+        "1848 строк: расстояния и повороты.",
+        "Отсечь шум: затор, камера, работы.",
+        "Точки на сетке 250 м."
+    ]},
+    { d: "2027-01-08", h: 3, g: "code", mix: { code: 3 }, w: 7, t: "Маршрут II", items: [
+        "Отрисовка BMP/PNG чистым Python.",
+        "Прочитать флаг с картинки.",
+        "Повтор E*."
+    ]},
+    { d: "2027-01-09", h: 5, g: "reverse", mix: { reverse: 3, code: 2 }, w: 7, t: "Реверс", items: [
+        "strings, file, xxd.",
+        ".pyc: marshal и dis.",
+        "Обфускация exec(base64).",
+        "Задача D «Фан-клуб»."
+    ]},
+    { d: "2027-01-10", h: 5, g: "mock", mix: { mock: 5 }, w: 7, t: "Тур №1", items: [
+        "Тур 180 мин, 10 задач, без интернета.",
+        "Разбор 2 ч.",
+        "Журнал ошибок; цель 4 задачи."
+    ]},
+    { d: "2027-01-11", h: 3, g: "web", mix: { web: 1, linux: 2 }, w: 8, t: "Разбор веба и Linux", items: [
+        "Слабые веб-задачи: разобрать и повторить.",
+        "PrivEsc: 10 приёмов.",
+        "2 похожие задачи."
+    ]},
+    { d: "2027-01-12", h: 2, g: "forensics", mix: { forensics: 2 }, w: 8, t: "Форензика-повтор", items: [
+        "Память, таймлайн, pcap.",
+        "3 задачи по 25 минут.",
+        "Разбор."
+    ]},
+    { d: "2027-01-13", h: 2, g: "crypto", mix: { crypto: 2 }, w: 8, t: "Крипто-повтор", items: [
+        "RSA-атаки: малый e, общий модуль.",
+        "hashcat-практика.",
+        "2 задачи."
+    ]},
+    { d: "2027-01-14", h: 3, g: "reverse", mix: { reverse: 2, code: 1 }, w: 8, t: "Реверс-повтор", items: [
+        "Байткод и чтение исходников.",
+        "Шаблоны чтения кода.",
+        "Задача на реверс."
+    ]},
+    { d: "2027-01-15", h: 3, g: "code", mix: { code: 3 }, w: 8, t: "Шаблоны", items: [
+        "6 шаблонов с пустого файла.",
+        "Цель: 6–8 минут каждый.",
+        "Записать, что не вспомнилось."
+    ]},
+    { d: "2027-01-16", h: 5, g: "mock", mix: { mock: 5 }, w: 8, t: "Тур №2", items: [
+        "Тур 180 мин, 10 задач.",
+        "Разбор 2 ч.",
+        "Цель 5 задач."
+    ]},
+    { d: "2027-01-17", h: 5, g: "web", mix: { web: 2, linux: 2, reserve: 1 }, w: 8, t: "Добор", items: [
+        "Веб: 2 задачи.",
+        "Linux: PrivEsc.",
+        "Резерв 1 ч."
+    ]},
+    { d: "2027-01-18", h: 3, g: "forensics", mix: { forensics: 3 }, w: 9, t: "Форензика-финиш", items: [
+        "4 форензика-задачи подряд.",
+        "Таймлайн.",
+        "Чек-лист 15 минут."
+    ]},
+    { d: "2027-01-19", h: 2, g: "crypto", mix: { crypto: 2 }, w: 9, t: "Крипто-финиш", items: [
+        "Цепочки, XOR, RSA.",
+        "3 задачи."
+    ]},
+    { d: "2027-01-20", h: 2, g: "stego", mix: { stego: 2 }, w: 9, t: "Стега-финиш", items: [
+        "LSB, звук, контейнеры.",
+        "3 задачи."
+    ]},
+    { d: "2027-01-21", h: 3, g: "mock", mix: { mock: 3 }, w: 9, t: "Тур №3", items: [
+        "Тур 180 мин, 10 задач.",
+        "Цель 6 задач."
+    ]},
+    { d: "2027-01-22", h: 3, g: "theory", mix: { theory: 1, reserve: 2 }, w: 9, t: "Разбор и теория", items: [
+        "Разбор тура.",
+        "Теория: 30 вопросов.",
+        "Чек-лист окружения."
+    ]},
+    { d: "2027-01-23", h: 5, g: "code", mix: { code: 2, mock: 2, reserve: 1 }, w: 9, t: "Финиш", items: [
+        "12 шаблонов по памяти 2 ч.",
+        "Лёгкий прогон 1 ч.",
+        "Документы и отдых 2 ч."
+    ]},
+    { d: "2027-01-24", h: 0, g: "exam", mix: {}, w: 9, t: "Регион", items: [
+        "5 минут: прочитать все задачи.",
+        "Три прохода.",
+        "Правило 25 минут.",
+        "Проверить формат флага."
+    ]}
+];
+
+(function () {
+    const $ = (sel, root) => (root || document).querySelector(sel);
+    const root = document.documentElement;
+    const byDate = new Map(DAYS.map(d => [d.d, d]));
+    const studyDays = DAYS.filter(d => d.h > 0);
+
+    const MN = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+    const MN_NOM = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+    const WD = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+    const WD_SHORT = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+    const WD_HEAD = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+
+    const CAT = {
+        code: ["Python", "Python и код"],
+        stego: ["Стега", "Стеганография"],
+        crypto: ["Крипто", "Криптография"],
+        forensics: ["Форензика", "Форензика"],
+        nets: ["Сети", "Сети"],
+        web: ["Веб", "Веб"],
+        linux: ["Linux", "Linux"],
+        reverse: ["Реверс", "Реверс"],
+        theory: ["Теория", "Теория ИБ"],
+        mock: ["Тур", "Тур / контрольная"],
+        reserve: ["Резерв", "Резерв"],
+        exam: ["Регион", "Регион"]
+    };
+    const DOT_ORDER = ["code", "stego", "crypto", "forensics", "nets", "web", "linux", "reverse", "theory", "mock", "reserve"];
+
+    function hoursWord(n) {
+        n = Math.abs(n);
+        const d10 = n % 10, d100 = n % 100;
+        if (d10 === 1 && d100 !== 11) return "час";
+        if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return "часа";
+        return "часов";
+    }
+
+    function dateObj(iso) {
+        const p = iso.split("-").map(Number);
+        return new Date(p[0], p[1] - 1, p[2]);
+    }
+
+    function fmtDate(iso) {
+        const d = dateObj(iso);
+        return d.getDate() + " " + MN[d.getMonth()];
+    }
+
+    function pad(n) { return String(n).padStart(2, "0"); }
+
+    /* ---------- calendar ---------- */
+    const MONTHS = [
+        { y: 2026, m: 10, from: 26, to: 30, note: "с 26-го" },
+        { y: 2026, m: 11, from: 1, to: 31, note: "полный месяц" },
+        { y: 2027, m: 0, from: 1, to: 24, note: "до 24-го" }
+    ];
+
+    const monthsEl = $("#months");
+    const detailEl = $("#detail");
+    const weeksEl = $("#weeksList");
+    const hoursEl = $("#hours");
+
+    function monthTotal(y, m) {
+        return DAYS.reduce((sum, d) => {
+            const dt = dateObj(d.d);
+            return dt.getFullYear() === y && dt.getMonth() === m ? sum + d.h : sum;
+        }, 0);
+    }
+
+    function dotsFor(d) {
+        const keys = DOT_ORDER.filter(k => d.mix && d.mix[k] > 0);
+        return keys.map(k => '<i class="dot ' + k + '"></i>').join("");
+    }
+
+    function buildCalendar() {
+        const frag = document.createDocumentFragment();
+        MONTHS.forEach(mo => {
+            const wrap = document.createElement("section");
+            wrap.className = "month";
+            wrap.setAttribute("aria-label", MN_NOM[mo.m] + " " + mo.y);
+            wrap.innerHTML =
+                '<div class="month-head">' +
+                    '<div class="month-title">' + MN_NOM[mo.m] + " " + mo.y + "</div>" +
+                    '<div class="month-total">' + monthTotal(mo.y, mo.m) + " ч · " + mo.note + "</div>" +
+                "</div>" +
+                '<div class="weekdays">' + WD_HEAD.map(w => "<span>" + w + "</span>").join("") + "</div>" +
+                '<div class="days"></div>';
+            const grid = wrap.querySelector(".days");
+            const lead = (new Date(mo.y, mo.m, mo.from).getDay() + 6) % 7;
+            for (let i = 0; i < lead; i++) {
+                const blank = document.createElement("div");
+                blank.className = "day is-empty";
+                grid.appendChild(blank);
+            }
+            for (let day = mo.from; day <= mo.to; day++) {
+                const iso = mo.y + "-" + pad(mo.m + 1) + "-" + pad(day);
+                const data = byDate.get(iso);
+                if (!data) {
+                    const blank = document.createElement("div");
+                    blank.className = "day is-empty";
+                    grid.appendChild(blank);
+                    continue;
+                }
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "day" + (data.g === "exam" ? " is-exam" : "") + (iso === DAYS[0].d ? " is-start" : "");
+                btn.dataset.date = iso;
+                btn.setAttribute("aria-label", fmtDate(iso) + ", " + data.t + ", " + data.h + " " + hoursWord(data.h));
+                btn.innerHTML =
+                    '<span class="day-num">' + day + "</span>" +
+                    '<span class="day-hours">' + (data.h ? data.h + " ч" : "—") + "</span>" +
+                    '<span class="day-title">' + data.t + "</span>" +
+                    '<span class="day-dots">' + dotsFor(data) + "</span>";
+                grid.appendChild(btn);
+            }
+            frag.appendChild(wrap);
+        });
+        monthsEl.appendChild(frag);
+    }
+
+    /* ---------- detail ---------- */
+    function renderDetail(iso) {
+        const d = byDate.get(iso);
+        if (!d) return;
+        const dt = dateObj(iso);
+        const idx = DAYS.findIndex(x => x.d === iso);
+        const studyIdx = studyDays.findIndex(x => x.d === iso);
+        const tags = d.g === "exam"
+            ? '<span class="tag mock"><i class="dot mock"></i>Тур</span>'
+            : Object.entries(d.mix).filter(([, v]) => v > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([k, v]) => '<span class="tag ' + k + '"><i class="dot ' + k + '"></i>' + CAT[k][0] + " " + v + " ч</span>")
+                .join("");
+        const dayNo = d.g === "exam" ? "День " + (studyDays.length + 1) + " из " + DAYS.length : "День " + (studyIdx + 1) + " из " + studyDays.length;
+        detailEl.innerHTML =
+            '<div class="detail-top">' +
+                '<div><div class="detail-weekday">' + WD[dt.getDay()] + "</div>" +
+                '<div class="detail-date">' + fmtDate(iso) + "</div></div>" +
+                '<div class="detail-hours"><b>' + (d.h ? d.h : "—") + "</b><span>" + (d.h ? hoursWord(d.h) : "тур") + "</span></div>" +
+            "</div>" +
+            '<div class="detail-tags">' + tags + "</div>" +
+            '<div class="detail-title">' + d.t + "</div>" +
+            '<ul class="detail-items">' + d.items.map(i => "<li>" + i + "</li>").join("") + "</ul>" +
+            '<div class="detail-foot"><span>' + dayNo + "</span><span>Неделя " + d.w + "</span></div>";
+    }
+
+    /* ---------- weeks ---------- */
+    function buildWeeks() {
+        const frag = document.createDocumentFragment();
+        WEEKS.forEach(w => {
+            const days = DAYS.filter(d => d.w === w.n);
+            const total = days.reduce((s, d) => s + d.h, 0);
+            const sec = document.createElement("section");
+            sec.className = "week";
+            sec.innerHTML =
+                '<div class="week-head">' +
+                    '<span class="week-index">Неделя ' + w.n + "</span>" +
+                    "<div><div class=\"week-dates\">" + w.label + "</div>" +
+                    '<div class="week-focus">' + w.focus + "</div></div>" +
+                    '<span class="week-hours">' + total + " ч</span>" +
+                "</div>" +
+                '<div class="week-days"></div>';
+            const host = sec.querySelector(".week-days");
+            days.forEach(d => {
+                const dt = dateObj(d.d);
+                const row = document.createElement("div");
+                row.className = "day-row";
+                row.innerHTML =
+                    '<div class="day-row-date"><b>' + pad(dt.getDate()) + "</b><span>" + WD_SHORT[dt.getDay()] + "</span></div>" +
+                    "<div><div class=\"day-row-title\">" + d.t + "</div>" +
+                    '<ul class="day-row-items">' + d.items.map(i => "<li>" + i + "</li>").join("") + "</ul></div>" +
+                    '<div class="day-row-hours">' + (d.h ? d.h + " ч" : "—") + "</div>";
+                host.appendChild(row);
+            });
+            frag.appendChild(sec);
+        });
+        weeksEl.appendChild(frag);
+    }
+
+    /* ---------- hours ---------- */
+    const HOUR_GROUPS = [
+        { label: "Python и код", keys: ["code"], cls: "blue" },
+        { label: "Крипто и стега", keys: ["crypto", "stego"], cls: "purple" },
+        { label: "Форензика и сети", keys: ["forensics", "nets"], cls: "green" },
+        { label: "Веб и Linux", keys: ["web", "linux"], cls: "red" },
+        { label: "Реверс", keys: ["reverse"], cls: "blue" },
+        { label: "Теория", keys: ["theory"], cls: "slate" },
+        { label: "Туры и резерв", keys: ["mock", "reserve"], cls: "accent" }
+    ];
+
+    function buildHours() {
+        const sums = HOUR_GROUPS.map(g => ({
+            label: g.label, cls: g.cls,
+            value: g.keys.reduce((s, k) => s + DAYS.reduce((a, d) => a + (d.mix[k] || 0), 0), 0)
+        }));
+        const max = Math.max.apply(null, sums.map(s => s.value));
+        hoursEl.innerHTML = sums.map(s =>
+            '<div class="hbar ' + s.cls + '"><span>' + s.label + "</span>" +
+            '<span class="track"><span class="fill" style="width:' + Math.round(s.value / max * 100) + '%"></span></span>' +
+            '<span class="v">' + s.value + "</span></div>"
+        ).join("");
+    }
+
+    /* ---------- selection ---------- */
+    let selected = null;
+
+    function select(iso, focus) {
+        const d = byDate.get(iso);
+        if (!d) return;
+        selected = iso;
+        document.querySelectorAll(".day.is-selected").forEach(el => el.classList.remove("is-selected"));
+        const btn = document.querySelector('.day[data-date="' + iso + '"]');
+        if (btn) {
+            btn.classList.add("is-selected");
+            if (focus) btn.focus();
+        }
+        renderDetail(iso);
+        try { history.replaceState(null, "", "#d-" + iso); } catch (e) {}
+    }
+
+    /* ---------- events ---------- */
+    monthsEl.addEventListener("click", e => {
+        const btn = e.target.closest(".day[data-date]");
+        if (!btn) return;
+        select(btn.dataset.date);
+        if (window.innerWidth < 1080) {
+            setTimeout(() => detailEl.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+        }
+    });
+
+    monthsEl.addEventListener("keydown", e => {
+        const idx = DAYS.findIndex(d => d.d === selected);
+        let next = null;
+        if (e.key === "ArrowRight") next = idx + 1;
+        if (e.key === "ArrowLeft") next = idx - 1;
+        if (e.key === "ArrowDown") next = idx + 7;
+        if (e.key === "ArrowUp") next = idx - 7;
+        if (e.key === "Home") next = 0;
+        if (e.key === "End") next = DAYS.length - 1;
+        if (next === null) return;
+        if (next < 0) next = 0;
+        if (next >= DAYS.length) next = DAYS.length - 1;
+        e.preventDefault();
+        select(DAYS[next].d, true);
+    });
+
+    /* ---------- theme ---------- */
+    const THEME_KEY = "plan-theme";
+    function setTheme(theme) {
+        root.setAttribute("data-theme", theme);
+        const use = $("#themeIcon").querySelector("use");
+        use.setAttribute("href", theme === "dark" ? "#i-sun" : "#i-moon");
+        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    }
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setTheme(saved === "dark" || saved === "light" ? saved : (prefersDark ? "dark" : "light"));
+    $("#themeBtn").addEventListener("click", () => {
+        setTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    });
+
+    $("#printBtn").addEventListener("click", () => window.print());
+    window.addEventListener("beforeprint", () => {
+        document.querySelectorAll("details").forEach(d => { d.open = true; });
+    });
+
+    const qaToggle = $("#qaToggle");
+    if (qaToggle) {
+        qaToggle.addEventListener("click", () => {
+            const all = Array.prototype.slice.call(document.querySelectorAll("#qa details"));
+            const anyClosed = all.some(d => !d.open);
+            all.forEach(d => { d.open = anyClosed; });
+            qaToggle.textContent = anyClosed ? "Свернуть все ответы" : "Раскрыть все ответы";
+        });
+    }
+
+    /* ---------- init ---------- */
+    buildCalendar();
+    buildWeeks();
+    buildHours();
+    const m = location.hash.match(/^#d-(\d{4}-\d{2}-\d{2})$/);
+    select(m && byDate.has(m[1]) ? m[1] : DAYS[0].d);
+})();
+</script>
+
+</div>
+</body>
+</html>
+
+
+
+
+
+
